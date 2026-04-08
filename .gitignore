@@ -31,3 +31,7 @@ dist/
 
 # Project outputs
 data/submissions/*.csv
+data/
+*.parquet
+*.csv
+!data/README.md
