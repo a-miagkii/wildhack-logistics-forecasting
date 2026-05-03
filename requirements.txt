@@ -3,5 +3,3 @@ pandas
 scikit-learn
 PyYAML
 fastparquet
-matplotlib
-seaborn
