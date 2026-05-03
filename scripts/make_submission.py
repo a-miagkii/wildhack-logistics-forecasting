@@ -1,5 +1,4 @@
 from pathlib import Path
-import os
 import sys
 
 import yaml
@@ -14,16 +13,16 @@ from src.validation import prepare_backtest_frame
 from src.models import make_ridge_model
 
 
-with open("configs/final_ridge.yaml", "r", encoding="utf-8") as f:
+with open(ROOT_DIR / "configs" / "final_ridge.yaml", "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
 
 # =========================
 # CONFIG
 # =========================
-TRAIN_PATH = Path(config["data"]["train_path"])
-TEST_PATH = Path(config["data"]["test_path"])
-SUBMISSION_DIR = Path(config["data"]["submission_dir"])
+TRAIN_PATH = ROOT_DIR / config["data"]["train_path"]
+TEST_PATH = ROOT_DIR / config["data"]["test_path"]
+SUBMISSION_DIR = ROOT_DIR / config["data"]["submission_dir"]
 SUBMISSION_NAME = config["data"]["submission_name"]
 
 ALPHA = config["model"]["alpha"]
@@ -157,6 +156,10 @@ submission_df = test_df.merge(
     how="left",
     on=["route_id", "timestamp"],
 )[["id", "forecast"]].rename(columns={"forecast": "y_pred"})
+
+if submission_df["y_pred"].isna().any():
+    missing_count = int(submission_df["y_pred"].isna().sum())
+    raise ValueError(f"Submission contains {missing_count} missing predictions.")
 
 
 # =========================
