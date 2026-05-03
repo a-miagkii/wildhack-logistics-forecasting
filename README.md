@@ -7,6 +7,7 @@
 Цель проекта — предсказать объём отгрузок по каждому `route_id` на горизонте 8 следующих получасовых интервалов и использовать этот прогноз для более точного вызова транспорта.
 
 **Финальный результат:**
+- private leaderboard: **0.331**, **41 место**
 - public leaderboard: **0.336**
 - лучшая локальная валидация: **0.332463**
 - финальная модель: **multi-output Ridge**
@@ -46,7 +47,7 @@
 - дополнительно используется тот же день недели (`same_weekday=True`)
 - между train и valid выдерживается gap, равный длине горизонта прогноза, чтобы не допускать утечки будущих таргетов
 
-Это позволило лучше согласовать локальный скор с публичным leaderboard и осознанно подбирать признаки и гиперпараметры.
+Это позволило лучше согласовать локальный скор с leaderboard и осознанно подбирать признаки и гиперпараметры.
 
 ## Признаки
 
@@ -139,37 +140,46 @@
 │   ├── features.py
 │   ├── metrics.py
 │   ├── models.py
-│   ├── naive_models.py
 │   ├── utils.py
 │   └── validation.py
 ├── scripts/
 │   └── make_submission.py
 ├── experiments/
 │   └── experiment_log.csv
+├── requirements.txt
 └── README.md
 ```
 
 ## Как запустить
 
+Ноутбук с экспериментами не нужен для получения финального результата. Финальный сабмит воспроизводится скриптом `scripts/make_submission.py`.
+
 ### 1. Установить зависимости
 ```bash
-pip install pandas numpy scikit-learn pyyaml fastparquet matplotlib seaborn jupyter
+python3 -m pip install -r requirements.txt
 ```
 
 ### 2. Положить данные
+Данные не включены в репозиторий. Для запуска нужны исходные parquet-файлы:
+
 ```text
 data/raw/train_solo_track.parquet
 data/raw/test_solo_track.parquet
 ```
 
-### 3. Запустить ноутбук с экспериментами
+### 3. Сформировать сабмит
 ```bash
-jupyter notebook notebooks/ridge_experiments.ipynb
+python3 scripts/make_submission.py
 ```
 
-### 4. Сформировать сабмит
+Скрипт обучает финальную Ridge-модель на последних 5 днях истории и сохраняет файл `data/submissions/submission_ridge_final.csv`.
+
+### Опционально: открыть эксперименты
+Ноутбуки нужны только для просмотра исследовательской части и подбора признаков/параметров:
+
 ```bash
-python scripts/make_submission.py
+python3 -m pip install matplotlib seaborn jupyter
+jupyter notebook notebooks/ridge_experiments.ipynb
 ```
 
 ## Что можно улучшить
